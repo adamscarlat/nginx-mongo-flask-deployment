@@ -80,6 +80,7 @@ pip3 install gunicorn flask
 Set up the flask main file to run on host 0.0.0.0 port 5000 (default port)
 
 Create a wsgi file
+
 This is a Web Server Gateway Interface and it will be used by gunicorn and the web server (nginx) to interface with our web application (flask). Create the new wsgi file and add the text:
 
 `vi ~/PROJECT_NAME/wsgi.py`
@@ -100,6 +101,7 @@ This will get to the root (/) url of your API. If there is no controller handlin
 Deactivate the virtual environment: `deactivate`
 
 5. Make Gunicorn a system service 
+
 Now we make Gunicorn a service process that will run as a startup daemon process. Unlike nginx and mongo, it does not come with a systemd unit file (required by linux if you want to be a service) so we'll create one for it.
 
 `sudo vi /etc/systemd/system/PROJECT_NAME.service`
@@ -126,6 +128,7 @@ sudo systemctl enable PROJECT_NAME
 ```
 
 6. Install MongoDB
+
 GPG keys are required by apt to ensure this package's consistency
 ```
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
@@ -159,6 +162,7 @@ Install nginx
 `sudo apt-get install nginx`
 
 Configure Nginx to work with Gunicorn wsgi
+
 Create a file for a nginx website and add the following text. Replace project name and server domain with yours
 `sudo nano /etc/nginx/sites-available/PROJECT_NAME`
 
