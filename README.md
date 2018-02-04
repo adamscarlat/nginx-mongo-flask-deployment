@@ -5,7 +5,7 @@ Deployment of a Flask API with a MongoDB backend behind an nginx server on AWS.
 
 1. [Setting up an EC2 Instance](#setting-up-an-ec2-instance)
 2. [Installs and Configurations](#installs-and-configurations)
-4. [Installing and Configuring Nginx](#configuring-nginx)
+4. [Installing and Configuring Nginx](#installing-and-configuring-nginx)
 5. [Remote Development with VSCode](#remote-dev-with-vscode)
 
 
