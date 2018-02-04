@@ -6,11 +6,11 @@ Deployment of a Flask API with a MongoDB backend behind an nginx server on AWS.
 1. [Setting up an EC2 Instance](#setting-up-an-ec2-instance)
 2. [Installs and Configurations](#installs-and-configurations)
 4. [Installing and Configuring Nginx](#installing-and-configuring-nginx)
-5. [Remote Development with VSCode](#remote-dev-with-vscode)
+5. [Remote Development with VSCode](#remote-development-with-vscode)
 
 
 ## Setting up an EC2 Instance
-Start an EC2 instance with an Ubuntu 16.04 OS on AWS. Make sure a security group that accepts SSH is enabled. Make sure to have a .pem file for login or generate a new one. 
+Start an EC2 instance with an Ubuntu 16.04 OS on AWS. Make sure a security group that accepts SSH and HTTP is enabled. Make sure to have a .pem file for login or generate a new one. 
 To have the instance accept the pem file it must have a root read-only permission. On a linux based OS, make the following changes to the pem file:
 
 ```
@@ -159,12 +159,16 @@ show dbs
 ## Installing and Configuring Nginx
 
 Install nginx
-`sudo apt-get install nginx`
+```
+sudo apt-get install nginx
+```
 
 Configure Nginx to work with Gunicorn wsgi
 
 Create a file for a nginx website and add the following text. Replace project name and server domain with yours
-`sudo nano /etc/nginx/sites-available/PROJECT_NAME`
+```
+sudo nano /etc/nginx/sites-available/PROJECT_NAME
+```
 
 ```
     server {
@@ -180,15 +184,61 @@ Create a file for a nginx website and add the following text. Replace project na
 This will make nginx forward any requests made to our aws domain on port 80 to PROJECT_NAME_.sock. Gunicorn listens on this socket and through interprocess communication it will receive the http request and route it to the web app.
 
 Create a symbolic link to the root sites-enabled folder:
-`sudo ln -s /etc/nginx/sites-available/MY_PROJECT_NAME /etc/nginx/sites-enabled`
+```
+sudo ln -s /etc/nginx/sites-available/MY_PROJECT_NAME /etc/nginx/sites-enabled
+```
 
 Check the nginx configuration for any syntax errors:
-`sudo nginx -t`
+```
+sudo nginx -t
+```
 
-*At this point* you are most likely to run into an error. Nginx may complain that the domain name (aws default domain name) is too long. Fix this by going to the nginx.conf and change the server_name_hash_bucket_size to next power of 2 (also uncomment). nginx conf file is located at: `/etc/nginx/nginx.conf`.
+*At this point* you are most likely to run into an error. Nginx may complain that the domain name (aws default domain name) is too long. Fix this by going to the nginx.conf and change the `server_name_hash_bucket_size` to next power of 2 (also uncomment). nginx conf file is located at: `/etc/nginx/nginx.conf`.
 
-Run Nginx: `sudo systemctl restart nginx`
+Run Nginx: 
+```
+sudo systemctl restart nginx
+```
 
 Test 
-`curl -X GET curl -X GET AWS_DOMAIN
-`
+```
+curl -X GET curl -X GET AWS_DOMAIN
+````
+
+## Remote Development with VSCode
+This is a nice feature which allows us to make changes to files on the server while operating from a local text editor. 
+
+1. Install Remote VSCode extension to VSCode (https://marketplace.visualstudio.com/items?itemName=rafaelmaiolla.remote-vscode)
+
+2. Add the following configuration to VSCode user settings:
+```
+//-------- Remote VSCode configuration --------
+
+// Port number to use for connection.
+"remote.port": 52698,
+
+// Launch the server on start up.
+"remote.onstartup": true
+
+// Address to listen on.
+"remote.host": "127.0.0.1"
+
+// If set to true, error for remote.port already in use won't be shown anymore.
+"remote.dontShowPortAlreadyInUseError": false
+```
+
+3. Ssh to remote machine with a ssh tunnel:
+```
+ssh -R 52698:127.0.0.1:52698 user@example.org
+```
+
+4. On the remote machine:
+    a. Install rmate: 
+    ```gem install rmate```
+    b. launch any file for editing like this and it will launch in local editor:
+    ```
+    rmate -p 52698 file
+    ```
+
+
+
